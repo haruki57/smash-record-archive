@@ -2,12 +2,17 @@ import React from 'react'
 import { GetServerSideProps } from 'next'
 import Layout from '../../components/Layout'
 
-type Props = {}
+type Props = {
+  id: number;
+  smashgg_id: number;
+  name: string;
+  name_eng: string;
+}
 const Player: React.FC<Props> = props => {
   return (
     <Layout>
       <div>
-        {JSON.stringify(props)}
+        {`${props.name} / ${props.name_eng}`}
         </div>
     </Layout>
   )
