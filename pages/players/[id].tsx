@@ -1,11 +1,9 @@
 import React from 'react'
 import { GetServerSideProps } from 'next'
-import ReactMarkdown from 'react-markdown'
 import Layout from '../../components/Layout'
-import Router from 'next/router'
 
 type Props = {}
-const Post: React.FC<Props> = props => {
+const Player: React.FC<Props> = props => {
   return (
     <Layout>
       <div>
@@ -21,4 +19,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: { ...data } }
 }
 
-export default Post
+export default Player
