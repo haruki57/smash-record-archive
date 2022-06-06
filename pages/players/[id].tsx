@@ -19,7 +19,7 @@ const Player: React.FC<Props> = props => {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(`http://localhost:3000/api/players/${context.params.id}`)
+  const res = await fetch(`http://localhost:3100/api/players/${context.params.id}`)
   const data = await res.json()
   return { props: { ...data } }
 }
