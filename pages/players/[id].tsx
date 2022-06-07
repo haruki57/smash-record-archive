@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import Layout from '../../components/Layout'
-import { PrismaClient, tournament_tournament_type } from "@prisma/client";
 import Head from 'next/head';
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+
+import { PrismaClient } from "@prisma/client";
+import { Button, Grid } from "@mui/material";
+import Link from "next/link";
 
 type Game = "smashsp" | "smash4" | "melee";
 const gameToTabId = {
@@ -27,7 +37,7 @@ type Tournament = {
   records: Record[];
 };
 
-type TounamentsPerGame = {
+type TournamentsPerGame = {
   smashsp: Tournament[];
   smash4: Tournament[];
   melee: Tournament[];
@@ -39,15 +49,181 @@ type Props = {
   };  
   tournamentsPerGame: Tournament;
 }
-const Player: React.FC<Props> = props => {
+const ordinal = (n: number | undefined) => {
+  if (!n) {
+    return undefined;
+  }
+  const s1 = +("" + n).slice(-1);
+  const s2 = +("" + n).slice(-2);
+  if (s2 >= 11 && s2 <= 13) {
+    return n + "th";
+  } else if (s1 === 1) {
+    return n + "st";
+  } else if (s1 === 2) {
+    return n + "nd";
+  } else if (s1 === 3) {
+    return n + "rd";
+  } else {
+    return n + "th";
+  }
+};
+const Player: React.FC<Props> = ({playerData, tournamentsPerGame}) => {
+  const [game, setGame] = useState<Game>("smashsp");
+
+  const [isAccordionExpand, setIsAccordionExpand] = useState<{
+    [id: number]: boolean;
+  }>(
+    tournamentsPerGame[game].reduce(
+      (prev: { [s: number]: boolean }, tournament) => {
+        prev[tournament.id] = false;
+        return prev;
+      },
+      {}
+    )
+  );
+  const handleAccordingClick = (i: number) => {
+    const newState = { ...isAccordionExpand };
+    newState[i] = !isAccordionExpand[i];
+    setIsAccordionExpand(newState);
+  };
+  const flipAllAccordionState = () => {
+    const newState = tournamentsPerGame[game].reduce(
+      (prev: { [s: number]: boolean }, tournament) => {
+        prev[tournament.id] = !isAccordionExpand[tournament.id];
+        return prev;
+      },
+      {}
+    );
+    setIsAccordionExpand(newState);
+  };
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    if (newValue === 0) {
+      setGame("smashsp");
+    } else if (newValue === 1) {
+      setGame("smash4");
+    } else {
+      setGame("melee");
+    }
+  };
   return (
-    <Layout>
+  <Layout>
       <Head>
-        <title>{props.playerData.name}</title>
+        <title>{playerData.name}</title>
       </Head>
-      <div>
-        {`${props.playerData.name} / ${props.playerData.nameEng}`}
-        </div>
+      <section>
+        <h1>{playerData.name}</h1>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 1 }}>
+          <Tabs
+            value={gameToTabId[game]}
+            onChange={handleTabChange}
+            aria-label="smash game tabs"
+          >
+            {tournamentsPerGame["smashsp"].length !== 0 && (
+              <Tab label="Smash SP" />
+            )}
+            {tournamentsPerGame["smash4"].length !== 0 && (
+              <Tab label="Smash 4" />
+            )}
+            {tournamentsPerGame["melee"].length !== 0 && <Tab label="Melee" />}
+          </Tabs>
+        </Box>
+        <Grid container justifyContent="flex-end" mt={1} mb={1}>
+          <Button
+            onClick={flipAllAccordionState}
+            color="secondary"
+            variant="contained"
+          >
+            Open All Record
+          </Button>
+        </Grid>
+        {tournamentsPerGame[game].map((tournament) => {
+          return (
+            <Box key={tournament.id} sx={{ margin: "12px 0" }}>
+              <Accordion
+                disableGutters
+                square
+                sx={{
+                  border: "1px solid #ccc",
+                  borderBottom: 0,
+                }}
+                expanded={isAccordionExpand[tournament.id] || false}
+              >
+                <AccordionSummary
+                  onClick={() => handleAccordingClick(tournament.id)}
+                >
+                  <Grid container alignItems={"center"}>
+                    <Grid
+                      item
+                      xs={9}
+                      sx={{
+                        paddingRight: 2,
+                      }}
+                    >
+                      <Typography>{tournament.name}</Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Typography variant="body2">{tournament.date}</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography variant="body2">
+                        {ordinal(tournament.finalRank)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </AccordionSummary>
+                <AccordionDetails
+                  sx={{
+                    padding: 0,
+                  }}
+                >
+                  <>
+                    {tournament.records.map((record) => {
+                      return (
+                        <Grid
+                          container
+                          justifyContent={"space-between"}
+                          key={record.roundStr}
+                          sx={{
+                            backgroundColor:
+                              record.myScore > record.opponentScore
+                                ? "#9ad29c"
+                                : "#ea8f8f",
+                            padding: 1,
+                            borderTop: "1px solid #ccc",
+                            borderBottom: "1px solid #ccc",
+                          }}
+                        >
+                          <Grid item xs={4}>
+                            <Link href={`/players/${record.opponentId}`}>
+                              {record.opponentName}
+                            </Link>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={4}
+                            sx={{
+                              textAlign: "center",
+                            }}
+                          >
+                            {record.roundStr}
+                          </Grid>
+                          <Grid
+                            item
+                            xs={4}
+                            sx={{
+                              textAlign: "right",
+                            }}
+                          >{`${record.myScore} - ${record.opponentScore}`}</Grid>
+                        </Grid>
+                      );
+                    })}
+                  </>
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          );
+        })}
+      </section>
     </Layout>
   )
 }
@@ -94,7 +270,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   finalRanks.forEach((finalRank) => {
     tournamentIdToFinalRank[finalRank.tournament_id] = finalRank.final_rank;
   });
-  const ret: TounamentsPerGame = { melee: [], smash4: [], smashsp: [] };
+  const ret: TournamentsPerGame = { melee: [], smash4: [], smashsp: [] };
   tournaments.forEach((tournament) => {
     ret[tournament.game].push({
       id: tournament.id,
