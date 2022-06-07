@@ -2,6 +2,7 @@ import React from 'react'
 import { GetServerSideProps } from 'next'
 import Layout from '../../components/Layout'
 import { PrismaClient, tournament_tournament_type } from "@prisma/client";
+import Head from 'next/head';
 
 type Game = "smashsp" | "smash4" | "melee";
 const gameToTabId = {
@@ -41,6 +42,9 @@ type Props = {
 const Player: React.FC<Props> = props => {
   return (
     <Layout>
+      <Head>
+        <title>{props.playerData.name}</title>
+      </Head>
       <div>
         {`${props.playerData.name} / ${props.playerData.nameEng}`}
         </div>
