@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { GetServerSideProps } from 'next'
-import Layout from '../../components/Layout'
-import Head from 'next/head';
+import React, { useState } from "react";
+import { GetServerSideProps } from "next";
+import Layout from "../../components/Layout";
+import Head from "next/head";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
@@ -46,9 +46,9 @@ type Props = {
   playerData: {
     name: string;
     nameEng: string;
-  };  
+  };
   tournamentsPerGame: Tournament;
-}
+};
 const ordinal = (n: number | undefined) => {
   if (!n) {
     return undefined;
@@ -67,7 +67,7 @@ const ordinal = (n: number | undefined) => {
     return n + "th";
   }
 };
-const Player: React.FC<Props> = ({playerData, tournamentsPerGame}) => {
+const Player: React.FC<Props> = ({ playerData, tournamentsPerGame }) => {
   const [game, setGame] = useState<Game>("smashsp");
 
   const [isAccordionExpand, setIsAccordionExpand] = useState<{
@@ -106,7 +106,7 @@ const Player: React.FC<Props> = ({playerData, tournamentsPerGame}) => {
     }
   };
   return (
-  <Layout>
+    <Layout>
       <Head>
         <title>{playerData.name}</title>
       </Head>
@@ -225,8 +225,8 @@ const Player: React.FC<Props> = ({playerData, tournamentsPerGame}) => {
         })}
       </section>
     </Layout>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // const res = await fetch(`http://localhost:3100/api/players/${context.params.id}`)
@@ -335,6 +335,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       tournamentsPerGame: ret,
     },
   };
-}
+};
 
-export default Player
+export default Player;
