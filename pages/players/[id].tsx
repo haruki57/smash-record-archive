@@ -210,10 +210,23 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export async function getStaticPaths() {
+  const prisma = new PrismaClient();
+  const players = await prisma.player.findMany();
   return {
-    paths: [{ params: { id: "4858" } }, { params: { id: "5353" } }],
+    paths: players.map((p) => {
+      return {
+        params: {
+          id: p.id.toString(),
+        },
+      };
+    }),
     fallback: false,
   };
+
+  // return {
+  //   paths: [{ params: { id: "4858" } }, { params: { id: "5353" } }],
+  //   fallback: false,
+  // };
 }
 
 export default Player;
