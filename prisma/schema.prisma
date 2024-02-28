@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model api_cache {
+  url     String @id @db.VarChar(200)
+  content String @db.LongText
+}
+
+model challonge_user {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "name") @db.VarChar(32)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model chara {
+  id       String     @db.VarChar(32)
+  name     String     @db.VarChar(16)
+  name_eng String     @db.VarChar(32)
+  game     chara_game
+  alias    String     @db.VarChar(256)
+  order    Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model chara_distribution_melee {
+  Character String? @db.VarChar(32)
+  type      String? @db.VarChar(4)
+  Num       BigInt  @default(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model chara_distribution_smash4 {
+  name_eng String? @db.VarChar(32)
+  type     String? @db.VarChar(4)
+  num      BigInt  @default(0)
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 1 BigInt @default(0) @map("1")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model final_rank {
+  player_id     Int
+  tournament_id Int?
+  final_rank    Int
+
+  @@unique([player_id, tournament_id], map: "player_tournament")
+  @@ignore
+}
+
+model honorable_mention {
+  id        Int    @id @default(autoincrement())
+  player_id Int
+  content   String @db.VarChar(128)
+
+  @@index([player_id], map: "player_id")
+}
+
+model jpr_individual_result {
+  player_id       Int
+  tournament_id   Int?
+  tournament_name String @db.VarChar(128)
+  final_rank      Int
+
+  @@id([player_id, tournament_name])
+}
+
+model jpr_tournament {
+  tournament_id    Int?
+  tournament_name  String   @id @db.VarChar(128)
+  location_id      Int
+  date             DateTime @db.DateTime(0)
+  participants     Int
+  tier             Int      @default(-1)
+  tournament_value Int?
+}
+
+model location {
+  id       Int           @id @default(autoincrement())
+  name_jpn String        @db.VarChar(64)
+  name_eng String        @db.VarChar(64)
+  type     location_type
+  parent   Int
+
+  @@unique([name_eng, type], map: "name_eng")
+  @@unique([name_jpn, type], map: "name_jpn")
+}
+
+model normalized_map {
+  id           Int    @id @default(autoincrement())
+  actual_name  String @db.VarChar(128)
+  display_name String @db.VarChar(128)
+  player_id    Int
+
+  @@index([actual_name], map: "actual_name_2")
+  @@index([display_name], map: "display_name")
+}
+
+model player {
+  id                     Int      @id @default(autoincrement())
+  smashgg_id             Int?
+  name                   String   @db.VarChar(128)
+  name_eng               String?  @db.VarChar(256)
+  location_id            Int?
+  country                String?  @db.VarChar(3)
+  ranking                Int?
+  is_valid               Boolean  @default(true)
+  tw_user_id             BigInt?  @unique(map: "tw_user_id")
+  tw_access_token        String?  @unique(map: "tw_access_token") @db.VarChar(255)
+  tw_screen_name         String?  @db.VarChar(15)
+  tw_access_token_secret String?  @db.VarChar(255)
+  integrated_to          Int?
+  created                DateTime @default(now()) @db.DateTime(0)
+  last_modified          DateTime @default(now()) @db.DateTime(0)
+
+  @@index([location_id], map: "loation_id")
+  @@index([smashgg_id], map: "smashgg_id")
+}
+
+model player_chara {
+  id                 Int                @id @default(autoincrement())
+  player_id          Int
+  chara              String             @db.VarChar(32)
+  game               player_chara_game
+  type               player_chara_type? @default(main)
+  ip_address_added   String?            @db.VarChar(32)
+  ip_address_removed String?            @db.VarChar(32)
+  start_date         DateTime           @default(now()) @db.DateTime(0)
+  end_date           DateTime?          @db.DateTime(0)
+
+  @@index([chara], map: "chara_id")
+  @@index([player_id], map: "player_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model player_location {
+  player_id     Int     @default(0)
+  location_name String? @db.VarChar(64)
+
+  @@ignore
+}
+
+model power_ranking {
+  player_id Int
+  ranking   Int
+  date      DateTime @default(now()) @db.Timestamp(0)
+
+  @@id([player_id, date])
+}
+
+model qualified_tournament {
+  tournament_id      Int @id
+  whole_participants Int
+}
+
+model record {
+  id                      Int                @id @default(autoincrement())
+  winner                  String             @db.VarChar(128)
+  loser                   String             @db.VarChar(128)
+  winner_id               Int?
+  loser_id                Int?
+  winner_score            Int?
+  loser_score             Int?
+  tournament              String             @db.VarChar(64)
+  tournament_id           Int?
+  phase_order             Int?
+  phase_name              String?            @db.VarChar(64)
+  phase_type              record_phase_type?
+  tournament_display_name String?            @db.VarChar(256)
+  round                   Int
+  no_result               Boolean?           @default(false)
+  match_id                Int                @unique(map: "match_id")
+  game                    record_game
+  updated                 DateTime           @default(now()) @db.Timestamp(0)
+
+  @@index([loser], map: "loser")
+  @@index([loser_id], map: "loser_id")
+  @@index([winner], map: "winner")
+  @@index([winner_id], map: "winner_id")
+}
+
+model record_chara {
+  id         Int       @id @default(autoincrement())
+  record_id  Int
+  player_id  Int
+  chara      String    @db.VarChar(32)
+  game       String?   @default("smash4") @db.VarChar(32)
+  start_date DateTime  @default(now()) @db.DateTime(0)
+  end_date   DateTime? @db.DateTime(0)
+
+  @@index([chara], map: "chara_id")
+  @@index([player_id], map: "player_id")
+}
+
+model tournament {
+  id                 Int                         @id @default(autoincrement())
+  display_name       String                      @db.VarChar(256)
+  pretty_name        String?                     @db.VarChar(32)
+  pretty_name_eng    String?                     @db.VarChar(32)
+  name               String                      @db.VarChar(64)
+  series_id          Int?
+  location_id        Int?
+  event_id           Int?
+  date               DateTime                    @default(now()) @db.Timestamp(0)
+  participants       Int?                        @default(-1)
+  whole_participants Int?
+  tier               Int?
+  user               String?                     @db.VarChar(32)
+  is_single_elimi    Boolean?                    @default(false)
+  tournament_type    tournament_tournament_type?
+  is_ignored         Boolean?                    @default(false)
+  is_qual            Boolean?                    @default(false)
+  is_dealt           Boolean?                    @default(false)
+  game               tournament_game
+
+  @@unique([name, event_id], map: "name_event")
+}
+
+model tournament_series {
+  id             Int     @id @default(autoincrement())
+  name_jpn       String  @unique(map: "name_jpn") @db.VarChar(64)
+  name_eng       String  @unique(map: "name_eng") @db.VarChar(64)
+  location_id    Int
+  regex          String? @db.VarChar(512)
+  alias          String? @db.VarChar(512)
+  twitter        String? @db.VarChar(32)
+  website_url    String? @db.VarChar(128)
+  challonge_user String? @db.VarChar(32)
+}
+
+enum chara_game {
+  smash4
+  melee
+  smashsp
+}
+
+enum location_type {
+  country
+  region
+  pref
+  state
+  city
+  other
+}
+
+enum player_chara_game {
+  smash4
+  melee
+  smashsp
+}
+
+enum player_chara_type {
+  main
+  sub
+  used
+}
+
+enum record_phase_type {
+  double_elimination @map("double elimination")
+  single_elimination @map("single elimination")
+  round_robin        @map("round robin")
+  other
+}
+
+enum tournament_tournament_type {
+  double_elimination @map("double elimination")
+  single_elimination @map("single elimination")
+  round_robin        @map("round robin")
+  other
+}
+
+enum record_game {
+  smash4
+  melee
+  smashsp
+}
+
+enum tournament_game {
+  smash4
+  melee
+  smashsp
+}
