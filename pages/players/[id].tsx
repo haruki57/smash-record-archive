@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 //import Layout from "../../components/Layout";
 import Head from "next/head";
 
@@ -100,7 +100,7 @@ const Player: React.FC<Props> = ({ playerData, tournamentsPerGame }) => {
   return <div>{JSON.stringify(tournamentsPerGame)}</div>;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getStaticProps: GetStaticProps = async (context) => {
   // const res = await fetch(`http://localhost:3100/api/players/${context.params.id}`)
   // const data = await res.json()
   // return { props: { ...data } }
@@ -208,5 +208,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
+
+export async function getStaticPaths() {
+  return {
+    paths: [{ params: { id: "4858" } }, { params: { id: "5353" } }],
+    fallback: false,
+  };
+}
 
 export default Player;
