@@ -88,16 +88,20 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export async function getStaticPaths() {
-  const prisma = new PrismaClient();
-  const tournaments = await prisma.tournament.findMany();
   return {
-    paths: tournaments.map((t) => {
-      return {
-        params: { id: t.id.toString() },
-      };
-    }),
-    fallback: false,
+    paths: [],
+    fallback: "blocking",
   };
+  // const prisma = new PrismaClient();
+  // const tournaments = await prisma.tournament.findMany();
+  // return {
+  //   paths: tournaments.map((t) => {
+  //     return {
+  //       params: { id: t.id.toString() },
+  //     };
+  //   }),
+  //   fallback: false,
+  // };
 }
 
 export default Player;
