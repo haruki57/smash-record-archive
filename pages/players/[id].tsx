@@ -13,11 +13,7 @@ import clsx from "clsx";
 
 type Game = "smashsp" | "smash4" | "melee";
 const GAMES: Game[] = ["smashsp", "smash4", "melee"] as const;
-const gameToTabId = {
-  smashsp: 0,
-  smash4: 1,
-  melee: 2,
-};
+
 type Record = {
   tournamentId: number;
   opponentId: number;
@@ -39,13 +35,6 @@ type TournamentsPerGame = {
   smashsp: Tournament[];
   smash4: Tournament[];
   melee: Tournament[];
-};
-type Props = {
-  playerData: {
-    name: string;
-    nameEng: string;
-  };
-  tournamentsPerGame: TournamentsPerGame;
 };
 const ordinal = (n: number | undefined) => {
   if (!n) {
@@ -156,28 +145,33 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
         {JSON.stringify(Array.from(openingTournamentIdSetPerGame[showingGame]))}
       </div>
       {/* <div>{JSON.stringify(allData)}</div> */}
-      <div>{playerData.name}</div>
+      <div className="text-xl">{playerData.name + " さんの成績"}</div>
       {GAMES.map((game) => {
         if (tournamentsPerGame[game].length === 0) {
           return;
         }
         return (
-          <div
+          <button
             key={game}
             onClick={() => {
               setShowingGame(game);
             }}
+            className={clsx(
+              "text-sm px-4 py-2 mr-2 mt-2 border rounded",
+              showingGame === game && "cursor-default bg-blue-400 text-white",
+              showingGame !== game && " hover:bg-gray-200 text-blue-400"
+            )}
           >
-            {game}
-          </div>
+            {gameToLabel(game)}
+          </button>
         );
       })}
       <div className="flex justify-end">
         <button
-          className="bg-blue-600 text-white text-sm rounded px-2 py-2 mr-2 my-2"
+          className="text-blue-400 text-sm border rounded px-2 py-2 mr-2 my-2"
           onClick={flipAllAccordionState}
         >
-          全ての試合結果を見る
+          全ての試合結果を表示
         </button>
       </div>
       {tournamentsPerGame[showingGame].map((tournament, index, arr) => {
@@ -201,7 +195,7 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
                   handleAccordingClick(id);
                 }}
               >
-                試合結果を見る
+                試合結果を表示
               </div>
             </div>
 
