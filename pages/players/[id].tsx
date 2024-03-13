@@ -1,4 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+} from "@chakra-ui/react";
+
 import { GetServerSideProps, GetStaticProps } from "next";
 //import Layout from "../../components/Layout";
 import Head from "next/head";
@@ -7,8 +21,11 @@ import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import zlib from "zlib";
+import { PlayerJson } from "@/types/types";
+import clsx from "clsx";
 
 type Game = "smashsp" | "smash4" | "melee";
+const GAMES: Game[] = ["smashsp", "smash4", "melee"] as const;
 const gameToTabId = {
   smashsp: 0,
   smash4: 1,
@@ -61,53 +78,242 @@ const ordinal = (n: number | undefined) => {
     return n + "th";
   }
 };
+const gameToLabel = (game: Game) => {
+  if (game === "smashsp") {
+    return "スマブラSP";
+  }
+  if (game === "smash4") {
+    return "スマブラ4";
+  }
+  return "スマブラDX";
+};
 const unzip = (value: string): string => {
   const buffer = Buffer.from(value, "base64"); // base64 => Bufferに変換
   const result = zlib.unzipSync(buffer); // 復号化
   const str = decodeURIComponent(result.toString()); // デコード
   return str;
 };
-//const Player: React.FC<Props> = ({ playerData, tournamentsPerGame }) => {
-const Player: React.FC = ({ playerJson }: any) => {
-  // const [game, setGame] = useState<Game>("smashsp");
 
-  // const [isAccordionExpand, setIsAccordionExpand] = useState<{
-  //   [id: number]: boolean;
-  // }>(
-  //   tournamentsPerGame[game].reduce(
-  //     (prev: { [s: number]: boolean }, tournament: Tournament) => {
-  //       prev[tournament.id] = false;
-  //       return prev;
-  //     },
-  //     {}
-  //   )
-  // );
-  // const handleAccordingClick = (i: number) => {
-  //   const newState = { ...isAccordionExpand };
-  //   newState[i] = !isAccordionExpand[i];
-  //   setIsAccordionExpand(newState);
-  // };
-  // const flipAllAccordionState = () => {
-  //   const newState = tournamentsPerGame[game].reduce(
-  //     (prev: { [s: number]: boolean }, tournament: Tournament) => {
-  //       prev[tournament.id] = !isAccordionExpand[tournament.id];
-  //       return prev;
-  //     },
-  //     {}
-  //   );
-  //   setIsAccordionExpand(newState);
-  // };
-  // const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-  //   if (newValue === 0) {
-  //     setGame("smashsp");
-  //   } else if (newValue === 1) {
-  //     setGame("smash4");
-  //   } else {
-  //     setGame("melee");
-  //   }
-  // };
-  // return <div>{JSON.stringify(tournamentsPerGame)}</div>;
-  return <div>{unzip(playerJson)}</div>;
+const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
+  const [showingGame, setShowingGame] = useState<Game>("smashsp");
+  const [bool, setBool] = useState<boolean>(false);
+  const allData = useMemo(() => {
+    const ret = JSON.parse(unzip(playerJson)) as PlayerJson;
+    GAMES.forEach((game) => {
+      ret.tournamentsPerGame[game] = ret.tournamentsPerGame[game].filter(
+        (t) => t.records.length > 0
+      );
+    });
+    return ret;
+  }, [playerJson]);
+  const { playerData, tournamentsPerGame } = allData;
+
+  const [
+    openingAccordionItemIndexPerGame,
+    setOpeningAccordionItemIndexPerGame,
+  ] = useState<{
+    smashsp: Set<number>;
+    smash4: Set<number>;
+    melee: Set<number>;
+  }>({
+    smashsp: new Set(),
+    smash4: new Set(),
+    melee: new Set(),
+  });
+
+  useEffect(() => {
+    if (tournamentsPerGame.smashsp.length > 0) {
+      setShowingGame("smashsp");
+      return;
+    }
+    if (tournamentsPerGame.smash4.length > 0) {
+      setShowingGame("smash4");
+      return;
+    }
+    setShowingGame("melee");
+  }, [tournamentsPerGame]);
+
+  const handleAccordingClick = (index: number) => {
+    if (openingAccordionItemIndexPerGame[showingGame].has(index)) {
+      openingAccordionItemIndexPerGame[showingGame].delete(index);
+    } else {
+      openingAccordionItemIndexPerGame[showingGame].add(index);
+    }
+    setOpeningAccordionItemIndexPerGame({
+      ...openingAccordionItemIndexPerGame,
+      [showingGame]: new Set(openingAccordionItemIndexPerGame[showingGame]),
+    });
+  };
+  const flipAllAccordionState = () => {
+    if (
+      openingAccordionItemIndexPerGame[showingGame].size ===
+      tournamentsPerGame[showingGame].length
+    ) {
+      openingAccordionItemIndexPerGame[showingGame].clear();
+    } else {
+      tournamentsPerGame[showingGame].forEach((_, index) => {
+        openingAccordionItemIndexPerGame[showingGame].add(index);
+      });
+    }
+    setOpeningAccordionItemIndexPerGame({
+      ...openingAccordionItemIndexPerGame,
+      [showingGame]: new Set(openingAccordionItemIndexPerGame[showingGame]),
+    });
+  };
+  return (
+    <div className="mx-10 my-10 bg-white">
+      <div>{showingGame}</div>
+      <div>
+        {JSON.stringify(
+          Array.from(openingAccordionItemIndexPerGame[showingGame])
+        )}
+      </div>
+      {/* <div>{JSON.stringify(allData)}</div> */}
+      <div>{playerData.name}</div>
+      <Tabs
+        variant="enclosed"
+        colorScheme="green"
+        isLazy={true}
+        onChange={() => {
+          setBool(true);
+          setTimeout(() => {
+            setBool(false);
+          }, 500);
+        }}
+      >
+        <TabList>
+          {GAMES.map((game) => {
+            if (tournamentsPerGame[game].length === 0) {
+              return;
+            }
+            return (
+              <Tab
+                id={game}
+                key={game}
+                onMouseDown={() => {
+                  setShowingGame(game);
+                }}
+              >
+                {game}
+              </Tab>
+            );
+          })}
+        </TabList>
+        <div className="flex justify-end">
+          <button
+            className="bg-blue-600 text-white rounded px-2 py-2 mr-2 my-2"
+            onClick={flipAllAccordionState}
+          >
+            全ての試合結果を見る
+          </button>
+        </div>
+        <TabPanels>
+          {["smashsp", "smash4", "melee"].map((game) => {
+            return (
+              <TabPanel key={game}>
+                <Accordion
+                  allowMultiple
+                  reduceMotion={true}
+                  index={Array.from(
+                    openingAccordionItemIndexPerGame[showingGame]
+                  )}
+                >
+                  {tournamentsPerGame[game as Game].map((tournament, index) => {
+                    const { id, name, finalRank, date, records } = tournament;
+                    return (
+                      <AccordionItem
+                        key={id}
+                        id={id.toString()}
+                        className={clsx("text-sm")}
+                      >
+                        {/* This empty button is necessary to work Accordion logic */}
+                        <AccordionButton
+                          style={{ display: "none" }}
+                        ></AccordionButton>
+
+                        <div className="flex flex-row  py-1 my-1">
+                          <div className="basis-6/12 text-blue-400 mx-2">
+                            <Link href={"/tournaments/1207"}>{name}</Link>
+                          </div>
+                          <div className="basis-3/12">{date}</div>
+                          <div className="basis-1/12">{finalRank + " 位"}</div>
+                          <div
+                            className="basis-2/12 cursor-pointer text-blue-400"
+                            onClick={() => {
+                              handleAccordingClick(index);
+                            }}
+                          >
+                            試合結果を見る
+                          </div>
+                        </div>
+
+                        <AccordionPanel>
+                          <div>
+                            {records.map((record) => {
+                              const backgroundColorClass =
+                                record.myScore > record.opponentScore
+                                  ? "bg-green-100"
+                                  : record.myScore < record.opponentScore
+                                  ? "bg-red-100"
+                                  : "bg-gray-100";
+                              let scoreText;
+                              if (record.myScore === -1) {
+                                scoreText = "不戦敗";
+                              } else if (record.opponentScore === -1) {
+                                scoreText = "不戦勝";
+                              } else if (
+                                record.myScore === 1 &&
+                                record.opponentScore === 0
+                              ) {
+                                scoreText = "勝";
+                              } else if (
+                                record.myScore === 0 &&
+                                record.opponentScore === 1
+                              ) {
+                                scoreText = "負";
+                              } else {
+                                scoreText =
+                                  record.myScore + "-" + record.opponentScore;
+                              }
+                              return (
+                                <div
+                                  className={clsx(
+                                    "flex",
+                                    "flex-row",
+                                    backgroundColorClass
+                                  )}
+                                  key={record.tournamentId + record.roundStr}
+                                >
+                                  <div className={clsx("basis-1/12")}>
+                                    {scoreText}
+                                  </div>
+                                  <div className={clsx("basis-3/12")}>
+                                    <Link
+                                      href={"/players/" + record.opponentId}
+                                    >
+                                      {record.opponentName}
+                                    </Link>
+                                  </div>
+                                  <div className={clsx("basis-3/12")}>
+                                    {record.roundStr}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </AccordionPanel>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              </TabPanel>
+            );
+          })}
+        </TabPanels>
+      </Tabs>
+      {/* <div>{unzip(playerJson)}</div> */}
+    </div>
+  );
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
