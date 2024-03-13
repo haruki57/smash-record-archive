@@ -22,8 +22,8 @@ export type TournamentsPerGame = {
 };
 export type PlayerJson = {
   playerData: {
+    id: number;
     name: string;
-    nameEng: string;
   };
   tournamentsPerGame: TournamentsPerGame;
 };

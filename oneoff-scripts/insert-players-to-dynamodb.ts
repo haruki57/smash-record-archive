@@ -11,7 +11,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
   const players = await prisma.player.findMany();
   const dynamo = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-  for (let i = 0; i < players.length; i++) {
+  for (let i = 990; i < players.length; i++) {
     const player = players[i];
     const playerId = player.id;
     const recordRows = await prisma.record.findMany({
@@ -52,6 +52,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     recordRows.forEach((record) => {
       const round = record.round;
       const phaseName = record.phase_name;
+      const phaseType = record.phase_type as "double elimination" | "single elimination" | "round robin" | null;
       let roundStr = phaseName ? phaseName + " " : "";
       if (round < 100) {
         roundStr += " (W) #" + round;
@@ -95,8 +96,8 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     });
     const playerJson: PlayerJson = {
       playerData: {
+        id: player.id,
         name: player.name,
-        nameEng: player.name_eng,
       },
       tournamentsPerGame,
     };
