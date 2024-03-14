@@ -10,6 +10,7 @@ import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import zlib from "zlib";
 import { PlayerJson } from "@/types/types";
 import clsx from "clsx";
+import Layout from "@/components/layout";
 
 type Game = "smashsp" | "smash4" | "melee";
 const GAMES: Game[] = ["smashsp", "smash4", "melee"] as const;
@@ -139,123 +140,134 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
   };
 
   return (
-    <div className="mx-10 my-10">
-      <div>{showingGame}</div>
-      <div>
-        {JSON.stringify(Array.from(openingTournamentIdSetPerGame[showingGame]))}
-      </div>
-      {/* <div>{JSON.stringify(allData)}</div> */}
-      <div className="text-xl">{playerData.name + " さんの成績"}</div>
-      {GAMES.map((game) => {
-        if (tournamentsPerGame[game].length === 0) {
-          return;
-        }
-        return (
+    <Layout>
+      <div className="mx-10 my-10">
+        <div>{showingGame}</div>
+        <div>
+          {JSON.stringify(
+            Array.from(openingTournamentIdSetPerGame[showingGame])
+          )}
+        </div>
+        {/* <div>{JSON.stringify(allData)}</div> */}
+        <div className="text-xl">{playerData.name + " さんの成績"}</div>
+        {GAMES.map((game) => {
+          if (tournamentsPerGame[game].length === 0) {
+            return;
+          }
+          return (
+            <button
+              key={game}
+              onClick={() => {
+                setShowingGame(game);
+              }}
+              className={clsx(
+                "text-sm px-4 py-2 mr-2 mt-2 border rounded",
+                showingGame === game && "cursor-default bg-blue-400 text-white",
+                showingGame !== game && " hover:bg-gray-200 text-blue-400"
+              )}
+            >
+              {gameToLabel(game)}
+            </button>
+          );
+        })}
+        <div className="flex justify-end">
           <button
-            key={game}
-            onClick={() => {
-              setShowingGame(game);
-            }}
-            className={clsx(
-              "text-sm px-4 py-2 mr-2 mt-2 border rounded",
-              showingGame === game && "cursor-default bg-blue-400 text-white",
-              showingGame !== game && " hover:bg-gray-200 text-blue-400"
-            )}
+            className="text-blue-400 text-sm border rounded px-2 py-2 mr-2 my-2"
+            onClick={flipAllAccordionState}
           >
-            {gameToLabel(game)}
+            全ての試合結果を表示
           </button>
-        );
-      })}
-      <div className="flex justify-end">
-        <button
-          className="text-blue-400 text-sm border rounded px-2 py-2 mr-2 my-2"
-          onClick={flipAllAccordionState}
-        >
-          全ての試合結果を表示
-        </button>
-      </div>
-      {tournamentsPerGame[showingGame].map((tournament, index, arr) => {
-        const { id, name, finalRank, date, records } = tournament;
-        return (
-          <div key={id} className={clsx("text-sm")}>
-            <div
-              className={clsx(
-                "flex flex-row py-1 border-t border-gray-300",
-                index === arr.length - 1 && "border-b"
-              )}
-            >
-              <div className="basis-6/12 text-blue-400 mx-2">
-                <Link href={"/tournaments/1207"}>{name}</Link>
-              </div>
-              <div className="basis-3/12">{date}</div>
-              <div className="basis-1/12">{finalRank + " 位"}</div>
+        </div>
+        {tournamentsPerGame[showingGame].map((tournament, index, arr) => {
+          const { id, name, finalRank, date, records } = tournament;
+          return (
+            <div key={id} className={clsx("text-sm")}>
               <div
-                className="basis-2/12 cursor-pointer text-blue-400"
-                onClick={() => {
-                  handleAccordingClick(id);
-                }}
+                className={clsx(
+                  "flex flex-row py-1 border-t border-gray-300",
+                  index === arr.length - 1 && "border-b"
+                )}
               >
-                試合結果を表示
+                <div className="basis-6/12 text-blue-400 mx-2">
+                  <Link href={"/tournaments/1207"}>{name}</Link>
+                </div>
+                <div className="basis-3/12">{date}</div>
+                <div className="basis-1/12">{finalRank + " 位"}</div>
+                <div
+                  className="basis-2/12 cursor-pointer text-blue-400"
+                  onClick={() => {
+                    handleAccordingClick(id);
+                  }}
+                >
+                  試合結果を表示
+                </div>
+              </div>
+
+              <div
+                className={clsx(
+                  !openingTournamentIdSetPerGame[showingGame].has(id) &&
+                    "hidden"
+                )}
+              >
+                {records.map((record, index, arr) => {
+                  const backgroundColorClass =
+                    record.myScore > record.opponentScore
+                      ? "bg-green-100"
+                      : record.myScore < record.opponentScore
+                      ? "bg-red-100"
+                      : "bg-gray-100";
+                  let scoreText;
+                  if (record.myScore === -1) {
+                    scoreText = "不戦敗";
+                  } else if (record.opponentScore === -1) {
+                    scoreText = "不戦勝";
+                  } else if (
+                    record.myScore === 1 &&
+                    record.opponentScore === 0
+                  ) {
+                    scoreText = "勝";
+                  } else if (
+                    record.myScore === 0 &&
+                    record.opponentScore === 1
+                  ) {
+                    scoreText = "負";
+                  } else {
+                    scoreText = record.myScore + "-" + record.opponentScore;
+                  }
+                  return (
+                    <div
+                      className={clsx(
+                        "flex",
+                        "flex-row",
+                        "px-2",
+                        "py-1",
+                        index === arr.length - 1 &&
+                          "mb-4 border-b border-gray-300",
+                        backgroundColorClass
+                      )}
+                      key={record.tournamentId + record.roundStr}
+                    >
+                      <div className={clsx("basis-1/12")}>{scoreText}</div>
+                      <div className={clsx("basis-5/12")}>
+                        <Link
+                          href={"/players/" + record.opponentId}
+                          className="text-blue-400"
+                        >
+                          {record.opponentName}
+                        </Link>
+                      </div>
+                      <div className={clsx("basis-6/12")}>
+                        {record.roundStr}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-
-            <div
-              className={clsx(
-                !openingTournamentIdSetPerGame[showingGame].has(id) && "hidden"
-              )}
-            >
-              {records.map((record, index, arr) => {
-                const backgroundColorClass =
-                  record.myScore > record.opponentScore
-                    ? "bg-green-100"
-                    : record.myScore < record.opponentScore
-                    ? "bg-red-100"
-                    : "bg-gray-100";
-                let scoreText;
-                if (record.myScore === -1) {
-                  scoreText = "不戦敗";
-                } else if (record.opponentScore === -1) {
-                  scoreText = "不戦勝";
-                } else if (record.myScore === 1 && record.opponentScore === 0) {
-                  scoreText = "勝";
-                } else if (record.myScore === 0 && record.opponentScore === 1) {
-                  scoreText = "負";
-                } else {
-                  scoreText = record.myScore + "-" + record.opponentScore;
-                }
-                return (
-                  <div
-                    className={clsx(
-                      "flex",
-                      "flex-row",
-                      "px-2",
-                      "py-1",
-                      index === arr.length - 1 &&
-                        "mb-4 border-b border-gray-300",
-                      backgroundColorClass
-                    )}
-                    key={record.tournamentId + record.roundStr}
-                  >
-                    <div className={clsx("basis-1/12")}>{scoreText}</div>
-                    <div className={clsx("basis-5/12")}>
-                      <Link
-                        href={"/players/" + record.opponentId}
-                        className="text-blue-400"
-                      >
-                        {record.opponentName}
-                      </Link>
-                    </div>
-                    <div className={clsx("basis-6/12")}>{record.roundStr}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-
-      {/* <div>{unzip(playerJson)}</div> */}
-    </div>
+          );
+        })}
+      </div>
+    </Layout>
   );
 };
 

@@ -5,6 +5,7 @@ import Head from "next/head";
 
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
+import Layout from "@/components/layout";
 
 type Game = "smashsp" | "smash4" | "melee";
 const gameToTabId = {
@@ -56,7 +57,7 @@ const ordinal = (n: number | undefined) => {
   }
 };
 const Tournaments: React.FC<Props> = ({ tournaments }) => {
-  return <div>{JSON.stringify(tournaments)}</div>;
+  return <Layout>{JSON.stringify(tournaments)}</Layout>;
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
