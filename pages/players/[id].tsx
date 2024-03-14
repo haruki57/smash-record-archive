@@ -71,6 +71,10 @@ const unzip = (value: string): string => {
   return str;
 };
 
+const isBye = (record: Record) => {
+  return record.myScore < 0 || record.opponentScore < 0;
+};
+
 const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
   const [showingGame, setShowingGame] = useState<Game>("smashsp");
   const allData = useMemo(() => {
@@ -83,6 +87,27 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
     return ret;
   }, [playerJson]);
   const { playerData, tournamentsPerGame } = allData;
+  const numTournaments = useMemo(() => {
+    return tournamentsPerGame[showingGame].length;
+  }, [tournamentsPerGame, showingGame]);
+  const numWins = useMemo(() => {
+    return tournamentsPerGame[showingGame].reduce((prev, current) => {
+      return (
+        prev +
+        current.records.filter((r) => r.myScore > r.opponentScore && !isBye(r))
+          .length
+      );
+    }, 0);
+  }, [tournamentsPerGame, showingGame]);
+  const numLosses = useMemo(() => {
+    return tournamentsPerGame[showingGame].reduce((prev, current) => {
+      return (
+        prev +
+        current.records.filter((r) => r.myScore < r.opponentScore && !isBye(r))
+          .length
+      );
+    }, 0);
+  }, [tournamentsPerGame, showingGame]);
 
   const [openingTournamentIdSetPerGame, setOpeningTournamentIdSetPerGame] =
     useState<{
@@ -142,13 +167,6 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
   return (
     <Layout>
       <div className="mx-10 my-10">
-        <div>{showingGame}</div>
-        <div>
-          {JSON.stringify(
-            Array.from(openingTournamentIdSetPerGame[showingGame])
-          )}
-        </div>
-        {/* <div>{JSON.stringify(allData)}</div> */}
         <div className="text-xl">{playerData.name + " さんの成績"}</div>
         {GAMES.map((game) => {
           if (tournamentsPerGame[game].length === 0) {
@@ -170,6 +188,12 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
             </button>
           );
         })}
+        <div className="mx-2 mt-2 text-sm">
+          <div>出場大会数: {numTournaments}</div>
+          <div>
+            {numWins} 勝 {numLosses} 敗
+          </div>
+        </div>
         <div className="flex justify-end">
           <button
             className="text-blue-400 text-sm border rounded px-2 py-2 mr-2 my-2"
@@ -184,7 +208,7 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
             <div key={id} className={clsx("text-sm")}>
               <div
                 className={clsx(
-                  "flex flex-row py-1 border-t border-gray-300",
+                  "flex flex-row py-1 border-t border-gray-300 hover:bg-gray-100",
                   index === arr.length - 1 && "border-b"
                 )}
               >
@@ -212,10 +236,10 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
                 {records.map((record, index, arr) => {
                   const backgroundColorClass =
                     record.myScore > record.opponentScore
-                      ? "bg-green-100"
+                      ? "bg-green-100 hover:bg-green-200"
                       : record.myScore < record.opponentScore
-                      ? "bg-red-100"
-                      : "bg-gray-100";
+                      ? "bg-red-100 hover:bg-red-200"
+                      : "bg-gray-100  hover:bg-gray-200";
                   let scoreText;
                   if (record.myScore === -1) {
                     scoreText = "不戦敗";
@@ -237,10 +261,7 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
                   return (
                     <div
                       className={clsx(
-                        "flex",
-                        "flex-row",
-                        "px-2",
-                        "py-1",
+                        "flex flex-row px-2 py-1",
                         index === arr.length - 1 &&
                           "mb-4 border-b border-gray-300",
                         backgroundColorClass
