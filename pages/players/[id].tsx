@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { GetServerSideProps, GetStaticProps } from "next";
-//import Layout from "../../components/Layout";
-import Head from "next/head";
-
-import { PrismaClient } from "@prisma/client";
+import { GetStaticProps } from "next";
 import Link from "next/link";
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
-import zlib from "zlib";
+
 import { PlayerJson } from "@/types/types";
 import clsx from "clsx";
 import Layout from "@/components/layout";
+import { unzip } from "@/utils/util";
 
 type Game = "smashsp" | "smash4" | "melee";
 const GAMES: Game[] = ["smashsp", "smash4", "melee"] as const;
@@ -23,38 +20,6 @@ type Record = {
   opponentScore: number;
   roundStr: string;
 };
-
-type Tournament = {
-  id: number;
-  name: string;
-  date: string;
-  finalRank: number | null;
-  records: Record[];
-};
-
-type TournamentsPerGame = {
-  smashsp: Tournament[];
-  smash4: Tournament[];
-  melee: Tournament[];
-};
-const ordinal = (n: number | undefined) => {
-  if (!n) {
-    return undefined;
-  }
-  const s1 = +("" + n).slice(-1);
-  const s2 = +("" + n).slice(-2);
-  if (s2 >= 11 && s2 <= 13) {
-    return n + "th";
-  } else if (s1 === 1) {
-    return n + "st";
-  } else if (s1 === 2) {
-    return n + "nd";
-  } else if (s1 === 3) {
-    return n + "rd";
-  } else {
-    return n + "th";
-  }
-};
 const gameToLabel = (game: Game) => {
   if (game === "smashsp") {
     return "スマブラSP";
@@ -63,12 +28,6 @@ const gameToLabel = (game: Game) => {
     return "スマブラ4";
   }
   return "スマブラDX";
-};
-const unzip = (value: string): string => {
-  const buffer = Buffer.from(value, "base64"); // base64 => Bufferに変換
-  const result = zlib.unzipSync(buffer); // 復号化
-  const str = decodeURIComponent(result.toString()); // デコード
-  return str;
 };
 
 const isBye = (record: Record) => {
