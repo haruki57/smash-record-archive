@@ -27,3 +27,18 @@ export type PlayerJson = {
   };
   tournamentsPerGame: TournamentsPerGame;
 };
+
+export type TournamentJson = {
+  tournamentData: {
+    name: string;
+    url: string;
+    game: string;
+    date: string;
+  };
+  ranks: {
+    rank: number;
+    playerName: string;
+    playerId: number;
+    lostTo: number[]
+  }[]
+};
