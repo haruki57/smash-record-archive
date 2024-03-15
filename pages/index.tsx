@@ -134,15 +134,24 @@ export default function Home() {
   return (
     <>
       <main className="mx-auto flex min-h-screen flex-col items-center">
-        <div className="w-full pt-32 pb-4 bg-gray-100 flex justify-center">
+        <div
+          className="w-full pt-48 pb-24 bg-gray-100 flex justify-center"
+          style={{
+            backgroundImage: "url(/background.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
           <div>
-            <div className="text-5xl mb-10">Smash Record Archive</div>
+            <div className="text-5xl mb-10 text-white text-center">
+              Smash Record Archive
+            </div>
             <div className="mx-full flex justify-center ">
               <form onSubmit={handleSubmit}>
                 <input
                   type="text"
                   value={query}
-                  placeholder="プレイヤー名で検索"
+                  placeholder="Player Name"
                   onChange={(e) => setQuery(e.target.value)}
                   className="w-60 border-2 p-2"
                 />
