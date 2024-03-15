@@ -41,6 +41,9 @@ import zlib from "zlib";
     }
     const nmArr = normalizedMapPerPlayerId[playerId];
     const player = players.find((p) => p.id == playerId);
+    if (!player) {
+      return;
+    }
     const playerNameSet = new Set<string>();
     nmArr.forEach((nm) => playerNameSet.add(normalizePlayerName(nm.actual_name)));
     playerNameSet.delete(player.name.toLowerCase());

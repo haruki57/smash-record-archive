@@ -2,6 +2,7 @@
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { PrismaClient } from "@prisma/client";
 import zlib from "zlib";
+import { TournamentJson } from '../types/types';
 
 const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
 
@@ -31,11 +32,11 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     
     const isChallonge = tournament.event_id == null;
 
-    const tournamentJson = {
+    const tournamentJson: TournamentJson = {
       tournamentData: {
         name: tournament.display_name,
         url: isChallonge ? `http://challonge.com/${tournament.name}` : `https://www.start.gg/tournament/${tournament.name}/events`,
-        date: tournament.date.toLocaleDateString("ja-JP"),
+        date: createDateStr(tournament.date),
         game: tournament.game,
       },
       ranks: finalRanks.map((finalRank) => {
@@ -56,7 +57,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
           lostTo,
         }
       })
-    }
+    } 
   
     const putCommand = new PutItemCommand({
       TableName: "smashrecordarchive-tournaments",
@@ -74,6 +75,12 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     await sleep(2000);
   }
 })();
+
+function createDateStr(date: Date): string {
+  const jaJP = date.toLocaleDateString("ja-JP");
+  const [year, month, day] = jaJP.split("/");
+  return year + "-" + ('0' + month).slice(-2) + "-" + ('0' + day).slice(-2);
+}
 
 function gzipAndBase64(str: string): string {
   const content = encodeURIComponent(str) // エンコード

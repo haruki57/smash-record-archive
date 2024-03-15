@@ -11,7 +11,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
   const players = await prisma.player.findMany();
   const dynamo = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-  for (let i = 990; i < players.length; i++) {
+  for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const playerId = player.id;
     const recordRows = await prisma.record.findMany({
@@ -43,7 +43,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
       tournamentsPerGame[tournament.game].push({
         id: tournament.id,
         name: tournament.display_name,
-        date: tournament.date.toLocaleDateString("ja-JP"),
+        date: createDateStr(tournament.date),
         finalRank: tournamentIdToFinalRank[tournament.id] || null,
         records: [],
       });
@@ -52,6 +52,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     recordRows.forEach((record) => {
       const round = record.round;
       const phaseName = record.phase_name;
+      // TODO use this.
       const phaseType = record.phase_type as "double elimination" | "single elimination" | "round robin" | null;
       let roundStr = phaseName ? phaseName + " " : "";
       if (round < 100) {
@@ -117,8 +118,13 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     }
     await sleep(2000);
   }
-
 })();
+
+function createDateStr(date: Date): string {
+  const jaJP = date.toLocaleDateString("ja-JP");
+  const [year, month, day] = jaJP.split("/");
+  return year + "-" + ('0' + month).slice(-2) + "-" + ('0' + day).slice(-2);
+}
 
 function gzipAndBase64(str: string): string {
   const content = encodeURIComponent(str) // エンコード
