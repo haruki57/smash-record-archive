@@ -80,7 +80,6 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
     });
 
   useEffect(() => {
-    console.log("useeffect");
     if (tournamentsPerGame.smashsp.length > 0) {
       setShowingGame("smashsp");
     } else if (tournamentsPerGame.smash4.length > 0) {
