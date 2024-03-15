@@ -61,6 +61,13 @@ function getRandomElements<T>(arr: T[], n: number): T[] {
   return result;
 }
 
+function kanaToHira(str: string) {
+  return str.replace(/[\u30a1-\u30f6]/g, function (match) {
+    var chr = match.charCodeAt(0) - 0x60;
+    return String.fromCharCode(chr);
+  });
+}
+
 export default function Home() {
   // Tsv
   // playerId \t playerName \t aliases
@@ -100,7 +107,7 @@ export default function Home() {
   const matchedPlayers = useMemo(() => {
     return playerData
       .filter((p) => {
-        const playerStr = (p.playerName + p.aliases).toLowerCase();
+        const playerStr = kanaToHira((p.playerName + p.aliases).toLowerCase());
         return playerStr.indexOf(query.toLowerCase()) >= 0;
       })
       .slice(0, 100)
