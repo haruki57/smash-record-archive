@@ -54,7 +54,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
           <div>{"game: " + gameToLabel(tournamentData.game)}</div>
         </div>
         <div className="mt-8">
-          <div className="flex text-sm border-b max-w-2xl mb-2">
+          <div className="flex text-sm border-b max-w-3xl mb-2">
             <div className="basis-1/12 mx-2">順位</div>
             <div className="basis-3/12">プレイヤー名</div>
             <div className="basis-4/12">負けた相手(勝者側)</div>
@@ -64,7 +64,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
             return (
               <div
                 key={rank.playerId}
-                className="flex border-b max-w-2xl hover:bg-gray-200"
+                className="flex border-b max-w-3xl hover:bg-gray-200"
               >
                 <div className="basis-1/12  mx-2">{rank.rank + " 位"}</div>
                 <div className="basis-3/12 text-blue-400">
@@ -76,7 +76,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
                   return (
                     <div key={playerId} className="basis-4/12">
                       <Link
-                        href={"/players" + playerIdToPlayer.get(playerId)?.rank}
+                        href={"/players/" + playerId}
                         className="text-blue-400"
                       >
                         {playerIdToPlayer.get(playerId)?.playerName}
