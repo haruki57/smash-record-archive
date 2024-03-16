@@ -47,7 +47,7 @@ const FEATURED_PLAYERS = [
 const FEATURED_TOURNAMENTS = [
   { id: 1271, name: "EVO Japan 2020 (スマブラSP)" },
   { id: 851, name: "Umebura for Wii U final (スマブラ4)" },
-  { id: 401, name: "KSB2017 (スマブラDX)" },
+  { id: 461, name: "BattleGateWay#17 (スマブラDX)" },
 ];
 
 function getRandomElements<T>(arr: T[], n: number): T[] {
