@@ -4,7 +4,7 @@ import { GetStaticProps } from "next";
 import Link from "next/link";
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { unzip } from "@/utils/util";
-import { TournamentJson } from "@/types/types";
+import { Game, TournamentJson } from "@/types/types";
 import Layout from "@/components/layout";
 import clsx from "clsx";
 
@@ -39,16 +39,18 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
       <div className="mx-10 my-10">
         <div className="text-xl">{tournamentData.name}</div>
         <div className="mx-2 my-2">
-          <div>
-            <a
-              href={tournamentData.url}
-              className="text-blue-400"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              トーナメント表
-            </a>
-          </div>
+          {tournamentData.url && (
+            <div>
+              <a
+                href={tournamentData.url}
+                className="text-blue-400"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                トーナメント表
+              </a>
+            </div>
+          )}
           <div>{tournamentData.date}</div>
           <div>{"game: " + gameToLabel(tournamentData.game)}</div>
         </div>

@@ -31,8 +31,8 @@ export type PlayerJson = {
 export type TournamentJson = {
   tournamentData: {
     name: string;
-    url: string;
-    game: string;
+    url?: string;
+    game: Game;
     date: string;
   };
   ranks: {
