@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { GetStaticProps } from "next";
 
 import Link from "next/link";
@@ -6,7 +6,6 @@ import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { unzip } from "@/utils/util";
 import { Game, TournamentJson } from "@/types/types";
 import Layout from "@/components/layout";
-import clsx from "clsx";
 
 type Props = {
   tournamentJson: string;
@@ -73,7 +72,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
                     {rank.playerName}
                   </Link>
                 </div>
-                {rank.lostTo.map((playerId, index) => {
+                {rank.lostTo.map((playerId) => {
                   return (
                     <div key={playerId} className="basis-4/12">
                       <Link
@@ -89,6 +88,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
                     </div>
                   );
                 })}
+                {rank.lostTo.length === 1 && <div className="basis-4/12"></div>}
               </div>
             );
           })}
