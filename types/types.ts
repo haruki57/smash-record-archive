@@ -15,6 +15,13 @@ export type Tournament = {
   finalRank: number | null;
   records: Record[];
 };
+
+export type TournamentIndex = {
+  id: number;
+  name: string;
+  date: string;
+  game: Game; 
+};
 export type TournamentsPerGame = {
   smashsp: Tournament[];
   smash4: Tournament[];

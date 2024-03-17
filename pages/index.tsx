@@ -4,10 +4,7 @@ import useSWR from "swr";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Footer from "@/components/footer";
 import Link from "next/link";
-import Layout from "@/components/layout";
 import { useRouter } from "next/router";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const fetcher = (...args: any) => fetch(args).then((res) => res.text());
 
@@ -73,7 +70,7 @@ export default function Home() {
   // playerId \t playerName \t aliases
   // aliases can be empty
   // Players are ordered by number of wins.
-  const { data: playerDataTsv, error } = useSWR("/master.txt", fetcher);
+  const { data: playerDataTsv, error } = useSWR("/players_master.txt", fetcher);
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [featuredPlayers, setFeaturedPlayers] = useState<
