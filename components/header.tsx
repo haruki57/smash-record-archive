@@ -9,7 +9,7 @@ export default function Header() {
         </div>
         <div className="flex gap-x-12">
           <Link href="/tournaments" className="text-m leading-6">
-            トーナメント一覧
+            Tournaments
           </Link>
           <Link href="/about" className="text-m leading-6">
             About
