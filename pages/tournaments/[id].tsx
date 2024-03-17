@@ -55,40 +55,42 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
         </div>
         <div className="mt-8">
           <div className="flex text-sm border-b max-w-3xl mb-2">
-            <div className="basis-1/12 mx-2">順位</div>
+            <div className="basis-2/12 mx-2">順位</div>
             <div className="basis-3/12">プレイヤー名</div>
-            <div className="basis-4/12">負けた相手(勝者側)</div>
-            <div className="basis-4/12">負けた相手(敗者側)</div>
+            <div className="basis-7/12">負けた相手</div>
           </div>
           {ranks.map((rank) => {
             return (
               <div
                 key={rank.playerId}
-                className="flex border-b max-w-3xl hover:bg-gray-200"
+                className="flex border-b max-w-3xl hover:bg-gray-200 py-1"
               >
-                <div className="basis-1/12  mx-2">{rank.rank + " 位"}</div>
+                <div className="basis-2/12  mx-2">{rank.rank + " 位"}</div>
                 <div className="basis-3/12 text-blue-400">
                   <Link href={"/players/" + rank.playerId}>
                     {rank.playerName}
                   </Link>
                 </div>
-                {rank.lostTo.map((playerId) => {
-                  return (
-                    <div key={playerId} className="basis-4/12">
-                      <Link
-                        href={"/players/" + playerId}
-                        className="text-blue-400"
-                      >
-                        {playerIdToPlayer.get(playerId)?.playerName}
-                      </Link>
-                      <span>
-                        {" "}
-                        ({playerIdToPlayer.get(playerId)?.rank + " 位"})
-                      </span>
-                    </div>
-                  );
-                })}
-                {rank.lostTo.length === 1 && <div className="basis-4/12"></div>}
+                <div className="basis-7/12">
+                  {rank.lostTo.map((playerId, index, arr) => {
+                    return (
+                      <>
+                        <Link
+                          href={"/players/" + playerId}
+                          className="text-blue-400"
+                          key={playerId}
+                        >
+                          {playerIdToPlayer.get(playerId)?.playerName}
+                        </Link>
+                        <span>
+                          {" "}
+                          ({playerIdToPlayer.get(playerId)?.rank + " 位"})
+                        </span>
+                        {index !== arr.length - 1 && <span>, </span>}
+                      </>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
