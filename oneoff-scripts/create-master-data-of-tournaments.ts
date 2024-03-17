@@ -19,7 +19,7 @@ import { TournamentIndex } from "../types/types";
         || tournamentId === 1238
       ) {
         // Foreign tournament records for JPR.
-        false;
+        return false;
       }
       return true;
     });
