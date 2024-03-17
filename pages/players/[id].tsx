@@ -174,7 +174,9 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
                   <Link href={"/tournaments/" + id}>{name}</Link>
                 </div>
                 <div className="basis-3/12">{date}</div>
-                <div className="basis-1/12">{finalRank + " 位"}</div>
+                <div className="basis-1/12">
+                  {finalRank ? finalRank + " 位" : "N/A"}
+                </div>
                 <div
                   className="basis-2/12 cursor-pointer text-blue-400"
                   onClick={() => {
