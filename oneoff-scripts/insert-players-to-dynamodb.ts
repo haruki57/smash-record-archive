@@ -14,6 +14,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const playerId = player.id;
+    console.log(i, playerId, player.name);
     const recordRows = await prisma.record.findMany({
       where: { OR: [{ winner_id: playerId }, { loser_id: playerId }] },
       orderBy: [
@@ -23,14 +24,19 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
       ],
     });
   
-    const tournaments = await prisma.tournament.findMany({
-      where: { id: { in: recordRows.map((r) => r.tournament_id || -1) } },
-      orderBy: [{ date: "desc" }],
-    });
-  
     const finalRanks: any[] =
       (await prisma.$queryRaw`select * from final_rank where player_id = ${playerId}`) ||
       [];
+    
+    // Sometimes finalRank is missing, sometimes records are missing. 
+    // So, to know all tournament, we have to merge them.
+    const allTournamentIdSet = new Set<number>([...recordRows.map((r) => r.tournament_id), ...finalRanks.map((fr) => fr.tournament_id)]);
+
+    const tournaments = await prisma.tournament.findMany({
+      where: { id: { in: Array.from(allTournamentIdSet) } },
+      orderBy: [{ date: "desc" }],
+    });
+  
     const tournamentIdToFinalRank: { [s: number]: number } = {};
     finalRanks.forEach((finalRank) => {
       tournamentIdToFinalRank[finalRank.tournament_id] = finalRank.final_rank;
@@ -113,7 +119,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     if (i % 10 === 0 ) {
       console.log("inserted " + (i + 1) + " rows.")
     }
-    await sleep(2000);
+    await sleep(250);
   }
 })();
 
