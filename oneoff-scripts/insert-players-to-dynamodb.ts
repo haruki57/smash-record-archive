@@ -22,9 +22,6 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
         { round: "desc" },
       ],
     });
-    if (!recordRows) {
-      continue;
-    }
   
     const tournaments = await prisma.tournament.findMany({
       where: { id: { in: recordRows.map((r) => r.tournament_id || -1) } },
@@ -70,16 +67,16 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
       let opponentScore;
       if (record.winner_id === playerId) {
         opponentName = record.loser;
-        opponentId = record.loser_id || 0;
-        myScore = record.winner_score || 0;
-        opponentScore = record.loser_score || 0;
+        opponentId = record.loser_id!;
+        myScore = record.winner_score!;
+        opponentScore = record.loser_score!;
       } else {
         opponentName = record.winner;
-        opponentId = record.winner_id || 0;
-        myScore = record.loser_score || 0;
-        opponentScore = record.winner_score || 0;
+        opponentId = record.winner_id!;
+        myScore = record.loser_score!;
+        opponentScore = record.winner_score!;
       }
-      const data: Record = {
+      const recordToPush: Record = {
         tournamentId: record.tournament_id || 0,
         opponentName,
         opponentId,
@@ -93,7 +90,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
       if (!tournament) {
         return;
       }
-      tournament.records.push(data);
+      tournament.records.push(recordToPush);
     });
     const playerJson: PlayerJson = {
       playerData: {

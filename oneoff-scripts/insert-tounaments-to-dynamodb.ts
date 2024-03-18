@@ -39,9 +39,10 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
     const players = await prisma.player.findMany({
       where: {
         id: {
-        in: finalRanks.map((fr) => fr.player_id)
+          in: finalRanks.map((fr) => fr.player_id)
+        }
       }
-    }})
+    });
     
     const recordRows = await prisma.record.findMany({
       where: { tournament_id: tournamentId,  },
@@ -70,7 +71,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
         const loseRow = recordRows.filter((record) => {
           return record.loser_id === playerId
         });
-        const lostTo = loseRow.map((r) => r.winner_id);
+        const lostTo = loseRow.map((r) => r.winner_id!);
         let playerName;
         if (tournamentId === 227 // TSC 3
           || tournamentId === 589  // umebura t.a.t
@@ -78,7 +79,7 @@ const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
           || tournamentId === 627// 闘会議2018 本戦
           || tournamentId === 1125// Weekly Smash Party 〜スマパ〜#44
         ) { 
-          playerName = players.find((p) => p.id === playerId).name;
+          playerName = players.find((p) => p.id === playerId)!.name;
         } else {
           playerName = winRow.length > 0 ? winRow[0].winner : loseRow[0].loser;
         }

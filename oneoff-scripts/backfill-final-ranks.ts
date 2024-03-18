@@ -46,10 +46,10 @@ function init(){
       return;
     }
     const round = record.round;
-    const loserId = record.loser_id;
+    const loserId = record.loser_id!;
     console.log(round, loserId)
     if (round >= 10000) {
-      const winnerId = record.winner_id;
+      const winnerId = record.winner_id!;
       playerIdToRank.set(winnerId, 1);
       playerIdToRank.set(loserId, 2);
       return;

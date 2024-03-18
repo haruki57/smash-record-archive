@@ -5,7 +5,7 @@ const Winloss: React.FC = () => {
   const router = useRouter();
   useEffect(() => {
     router.replace("/");
-  }, []);
+  }, [router]);
   return null;
 };
 
