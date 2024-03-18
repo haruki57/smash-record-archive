@@ -74,7 +74,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
                 <div className="basis-7/12">
                   {rank.lostTo.map((playerId, index, arr) => {
                     return (
-                      <>
+                      <span key={playerId}>
                         <Link
                           href={"/players/" + playerId}
                           className="text-blue-400"
@@ -87,7 +87,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
                           ({playerIdToPlayer.get(playerId)?.rank + " 位"})
                         </span>
                         {index !== arr.length - 1 && <span>, </span>}
-                      </>
+                      </span>
                     );
                   })}
                 </div>
