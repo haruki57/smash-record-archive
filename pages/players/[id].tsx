@@ -38,11 +38,6 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
   const [showingGame, setShowingGame] = useState<Game>("smashsp");
   const allData = useMemo(() => {
     const ret = JSON.parse(unzip(playerJson)) as PlayerJson;
-    GAMES.forEach((game) => {
-      ret.tournamentsPerGame[game] = ret.tournamentsPerGame[game].filter(
-        (t) => t.records.length > 0
-      );
-    });
     return ret;
   }, [playerJson]);
   const { playerData, tournamentsPerGame } = allData;
