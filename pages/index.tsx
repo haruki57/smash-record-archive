@@ -5,6 +5,8 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Footer from "@/components/footer";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import GoogleAnalytics from "@/components/ga";
 
 const fetcher = (...args: any) => fetch(args).then((res) => res.text());
 
@@ -130,6 +132,9 @@ export default function Home() {
   }
   return (
     <>
+      <Head>
+        <GoogleAnalytics />
+      </Head>
       <main className="mx-auto flex min-h-screen flex-col items-center">
         <div
           className="w-full pt-48 pb-24 bg-gray-100 flex justify-center"
