@@ -7,6 +7,7 @@ import Layout from "@/components/layout";
 import useSWR from "swr";
 import { Game, TournamentIndex } from "@/types/types";
 import clsx from "clsx";
+import Head from "next/head";
 
 const fetcher = (...args: any) => fetch(args).then((res) => res.text());
 const gameToLabel = (game: Game) => {
@@ -47,6 +48,10 @@ const Tournaments: React.FC = () => {
 
   return (
     <Layout>
+      <Head>
+        <title>Tournaments - Smash Record</title>
+        <meta name="description" content={"List of Tournaments"} />
+      </Head>
       <div className="mx-10 my-10">
         <div className="text-xl">トーナメント一覧</div>
         {["smashsp", "smash4", "melee"].map((game) => {

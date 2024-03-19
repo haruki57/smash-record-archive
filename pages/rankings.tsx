@@ -1,10 +1,15 @@
 import React from "react";
 import Layout from "@/components/layout";
 import Link from "next/link";
+import Head from "next/head";
 
 const RankingsSmashsp: React.FC = () => {
   return (
     <Layout>
+      <Head>
+        <title>Rankings - Smash Record</title>
+        <meta name="description" content={"Rankings page of Smash Record"} />
+      </Head>
       <div className="m-10">
         <div className="m-2">
           <div className="mb-4">スマッシュ4</div>

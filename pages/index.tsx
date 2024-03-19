@@ -134,6 +134,8 @@ export default function Home() {
     <>
       <Head>
         <GoogleAnalytics />
+        <title>Smash Record</title>
+        <meta name="description" content={"Top page of Smash Record"} />
       </Head>
       <main className="mx-auto flex min-h-screen flex-col items-center">
         <div

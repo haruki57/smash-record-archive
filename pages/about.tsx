@@ -1,9 +1,14 @@
 import React from "react";
 import Layout from "@/components/layout";
+import Head from "next/head";
 
 const About: React.FC = () => {
   return (
     <Layout>
+      <Head>
+        <title>About - Smash Record</title>
+        <meta name="description" content={"about"} />
+      </Head>
       <div className="m-10">
         <p>
           Smash Record Archive is a website that collects records of offline

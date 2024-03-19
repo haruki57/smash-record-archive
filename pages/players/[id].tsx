@@ -8,6 +8,7 @@ import { PlayerJson } from "@/types/types";
 import clsx from "clsx";
 import Layout from "@/components/layout";
 import { unzip } from "@/utils/util";
+import Head from "next/head";
 
 type Game = "smashsp" | "smash4" | "melee";
 const GAMES: Game[] = ["smashsp", "smash4", "melee"] as const;
@@ -119,6 +120,10 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
 
   return (
     <Layout>
+      <Head>
+        <title>{playerData.name + `- Smash Record`}</title>
+        <meta name="description" content={playerData.name + " さんの戦績"} />
+      </Head>
       <div className="mx-10 my-10">
         <div className="text-xl">{playerData.name + " さんの成績"}</div>
         {GAMES.map((game) => {

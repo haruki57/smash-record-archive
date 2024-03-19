@@ -6,6 +6,7 @@ import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { unzip } from "@/utils/util";
 import { Game, TournamentJson } from "@/types/types";
 import Layout from "@/components/layout";
+import Head from "next/head";
 
 type Props = {
   tournamentJson: string;
@@ -35,6 +36,10 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
 
   return (
     <Layout>
+      <Head>
+        <title>{tournamentData.name + `- Smash Record`}</title>
+        <meta name="description" content={tournamentData.name} />
+      </Head>
       <div className="mx-10 my-10">
         <div className="text-xl">{tournamentData.name}</div>
         <div className="mx-2 my-2">
