@@ -7,16 +7,16 @@ const About: React.FC = () => {
     <Layout>
       <Head>
         <title>About - Smash Record</title>
-        <meta name="description" content={"about"} />
+        <meta name="description" content={"About."} />
       </Head>
       <div className="m-10">
         <p>
           Smash Record Archive is a website that collects records of offline
-          Smash Bros tournaments in Japan prior to the COVID-19 pandemic.
+          Super Smash Bros. tournaments in Japan prior to the COVID-19 pandemic.
         </p>
         <p>
-          This website is currently no longer being updated. For the up-to-date
-          results, please see below:
+          This website is currently no longer being updated. For the most
+          up-to-date results, please see the following:
         </p>
         <ul className="m-4">
           <li className="mt-1">
