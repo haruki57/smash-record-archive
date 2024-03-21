@@ -50,6 +50,20 @@ const About: React.FC = () => {
             </a>
           </li>
         </ul>
+        <h2>For data enthusiast:</h2>
+        <p>
+          Characters and region data are exported{" "}
+          <a
+            href="https://docs.google.com/spreadsheets/d/1W-VvNlD-XZAcZUW9K42SSUI1coHf8S45V-0djGv_v4k/edit#gid=0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400"
+          >
+            Google Spreadsheet
+          </a>
+          . Note that the data are imported at 2024-03-21 and I don't keep these
+          data up to date. So if you want to use the data, please be careful!
+        </p>
       </div>
     </Layout>
   );
