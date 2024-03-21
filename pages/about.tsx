@@ -61,8 +61,9 @@ const About: React.FC = () => {
           >
             Google Spreadsheet
           </a>
-          . Note that the data are imported at 2024-03-21 and I don't keep these
-          data up to date. So if you want to use the data, please be careful!
+          . Note that the data are imported at 2024-03-21 and I don&apos;t keep
+          these data up to date. So if you want to use the data, please be
+          careful!
         </p>
       </div>
     </Layout>
