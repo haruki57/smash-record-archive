@@ -6,7 +6,7 @@ import Footer from "@/components/footer";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import GoogleAnalytics from "@/components/ga";
+import Layout from "@/components/layout";
 
 const fetcher = (...args: any) => fetch(args).then((res) => res.text());
 
@@ -133,90 +133,93 @@ export default function Home() {
   return (
     <>
       <Head>
-        <GoogleAnalytics />
         <title>Smash Record</title>
         <meta name="description" content={"Top page of Smash Record"} />
       </Head>
-      <main className="mx-auto flex min-h-screen flex-col items-center">
-        <div
-          className="w-full pt-48 pb-24 bg-gray-100 flex justify-center"
-          style={{
-            backgroundImage: "url(/background.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div>
-            <div className="text-5xl mb-10 text-white text-center">
-              Smash Record Archive
-            </div>
-            <div className="mx-full flex justify-center ">
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  value={query}
-                  placeholder="Player Name"
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="w-60 border-2 p-2"
-                />
-              </form>
-            </div>
-            <div className="flex justify-center">
-              <div className="overflow-auto overflow-y-scroll h-40 w-60">
-                {query.length > 0 && matchedPlayers.length > 0 && (
-                  <div className="border shadow-inner w-60 bg-white">
-                    {matchedPlayers.map((p) => {
-                      return (
-                        <div key={p.playerId} className="">
-                          <Link href={`/players/${p.playerId}`}>
-                            <div className="p-2 hover:bg-gray-200">
-                              {p.playerName}
-                            </div>
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+      <Layout noHeader={true}>
+        <main className="mx-auto flex min-h-screen flex-col items-center">
+          <div
+            className="w-full pt-48 pb-24 bg-gray-100 flex justify-center"
+            style={{
+              backgroundImage: "url(/background.png)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div>
+              <div className="text-5xl mb-10 text-white text-center">
+                Smash Record Archive
+              </div>
+              <div className="mx-full flex justify-center ">
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="text"
+                    value={query}
+                    placeholder="Player Name"
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-60 border-2 p-2"
+                  />
+                </form>
+              </div>
+              <div className="flex justify-center">
+                <div className="overflow-auto overflow-y-scroll h-40 w-60">
+                  {query.length > 0 && matchedPlayers.length > 0 && (
+                    <div className="border shadow-inner w-60 bg-white">
+                      {matchedPlayers.map((p) => {
+                        return (
+                          <div key={p.playerId} className="">
+                            <Link href={`/players/${p.playerId}`}>
+                              <div className="p-2 hover:bg-gray-200">
+                                {p.playerName}
+                              </div>
+                            </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="w-full pb-12">
-          <div className="text-3xl text-center py-8">Featured Players</div>
-          {featuredPlayers.map((p) => {
-            return (
-              <Link
-                key={p.playerId}
-                href={`/players/${p.playerId}`}
-                className="block rounded py-4 w-80 my-6 mt-2 border mx-auto text-center hover:bg-gray-200"
-              >
-                {p.playerName}
-              </Link>
-            );
-          })}
-        </div>
-        <div className="w-full pb-4 bg-gray-100 ">
-          <div className="text-3xl text-center py-8 ">Featured Tournaments</div>
-          <div className="flex flex-col justify-center ">
-            {FEATURED_TOURNAMENTS.map((t) => {
+          <div className="w-full pb-12">
+            <div className="text-3xl text-center py-8">Featured Players</div>
+            {featuredPlayers.map((p) => {
               return (
-                <div key={t.id} className="mx-auto my-3">
-                  <Link
-                    href={`/tournaments/${t.id}`}
-                    className="inline-block w-80 rounded py-4 px-4 border mx-auto text-center bg-white hover:bg-gray-200"
-                  >
-                    {t.name}
-                  </Link>
-                </div>
+                <Link
+                  key={p.playerId}
+                  href={`/players/${p.playerId}`}
+                  className="block rounded py-4 w-80 my-6 mt-2 border mx-auto text-center hover:bg-gray-200"
+                >
+                  {p.playerName}
+                </Link>
               );
-            })}{" "}
-            <Link href="/tournaments" className="mt-4 mx-auto text-blue-400">
-              See All Tournaments
-            </Link>
+            })}
           </div>
-        </div>
-      </main>
+          <div className="w-full pb-4 bg-gray-100 ">
+            <div className="text-3xl text-center py-8 ">
+              Featured Tournaments
+            </div>
+            <div className="flex flex-col justify-center ">
+              {FEATURED_TOURNAMENTS.map((t) => {
+                return (
+                  <div key={t.id} className="mx-auto my-3">
+                    <Link
+                      href={`/tournaments/${t.id}`}
+                      className="inline-block w-80 rounded py-4 px-4 border mx-auto text-center bg-white hover:bg-gray-200"
+                    >
+                      {t.name}
+                    </Link>
+                  </div>
+                );
+              })}{" "}
+              <Link href="/tournaments" className="mt-4 mx-auto text-blue-400">
+                See All Tournaments
+              </Link>
+            </div>
+          </div>
+        </main>
+      </Layout>
       <Footer />
     </>
   );
