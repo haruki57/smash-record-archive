@@ -162,23 +162,28 @@ export default function Home() {
                 </form>
               </div>
               <div className="flex justify-center">
-                <div className="overflow-auto overflow-y-scroll h-40 w-60">
-                  {query.length > 0 && matchedPlayers.length > 0 && (
-                    <div className="border shadow-inner w-60 bg-white">
-                      {matchedPlayers.map((p) => {
-                        return (
-                          <div key={p.playerId} className="">
-                            <Link href={`/players/${p.playerId}`}>
-                              <div className="p-2 hover:bg-gray-200">
-                                {p.playerName}
-                              </div>
-                            </Link>
-                          </div>
-                        );
-                      })}
+                {query.length > 0 && matchedPlayers.length > 0 && (
+                  <div className="h-40 w-60">
+                    <div className="overflow-auto overflow-y-scroll overflow-x-hidden max-h-40">
+                      <div className="border shadow-inner w-60 bg-white">
+                        {matchedPlayers.map((p) => {
+                          return (
+                            <div key={p.playerId} className="">
+                              <Link href={`/players/${p.playerId}`}>
+                                <div className="p-2 hover:bg-gray-200">
+                                  {p.playerName}
+                                </div>
+                              </Link>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+                {!(query.length > 0 && matchedPlayers.length > 0) && (
+                  <div className="h-40"></div>
+                )}
               </div>
             </div>
           </div>
