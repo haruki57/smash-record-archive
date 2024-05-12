@@ -15,7 +15,7 @@ export default function Layout({
       {!noHeader && <Header />}
       <main>{children}</main>
       <Footer />
-      <GoogleAnalytics gaId="G-XYZ" />
+      <GoogleAnalytics gaId={GA_TAG_ID} />
     </>
   );
 }
