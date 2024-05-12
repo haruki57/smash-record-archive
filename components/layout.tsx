@@ -2,6 +2,7 @@ import Header from "./header";
 import Footer from "./footer";
 import { GoogleAnalytics } from "@next/third-parties/google";
 export const GA_TAG_ID = process.env.NEXT_PUBLIC_GA_ID || "";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function Layout({
   children,
@@ -16,6 +17,7 @@ export default function Layout({
       <main>{children}</main>
       <Footer />
       <GoogleAnalytics gaId={GA_TAG_ID} />
+      <SpeedInsights />
     </>
   );
 }
