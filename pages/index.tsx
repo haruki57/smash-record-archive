@@ -133,8 +133,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Smash Record</title>
-        <meta name="description" content={"Top page of Smash Record"} />
+        <title>Smash Record Archive</title>
+        <meta name="description" content={"Top page of Smash Record Archive"} />
       </Head>
       <Layout noHeader={true}>
         <main className="mx-auto flex min-h-screen flex-col items-center">

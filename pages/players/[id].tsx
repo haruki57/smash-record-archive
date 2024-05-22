@@ -121,7 +121,7 @@ const Player: React.FC<{ playerJson: string }> = ({ playerJson }) => {
   return (
     <Layout>
       <Head>
-        <title>{playerData.name + `- Smash Record`}</title>
+        <title>{playerData.name + `- Smash Record Archive`}</title>
         <meta name="description" content={playerData.name + " さんの戦績"} />
       </Head>
       <div className="mx-10 my-10">

@@ -37,7 +37,7 @@ const Tournament: React.FC<Props> = ({ tournamentJson }) => {
   return (
     <Layout>
       <Head>
-        <title>{tournamentData.name + `- Smash Record`}</title>
+        <title>{tournamentData.name + `- Smash Record Archive`}</title>
         <meta name="description" content={tournamentData.name} />
       </Head>
       <div className="mx-10 my-10">

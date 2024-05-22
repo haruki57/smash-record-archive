@@ -6,7 +6,7 @@ const About: React.FC = () => {
   return (
     <Layout>
       <Head>
-        <title>About - Smash Record</title>
+        <title>About - Smash Record Archive</title>
         <meta name="description" content={"About."} />
       </Head>
       <div className="m-10">

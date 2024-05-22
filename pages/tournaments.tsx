@@ -49,7 +49,7 @@ const Tournaments: React.FC = () => {
   return (
     <Layout>
       <Head>
-        <title>Tournaments - Smash Record</title>
+        <title>Tournaments - Smash Record Archive</title>
         <meta name="description" content={"List of Tournaments"} />
       </Head>
       <div className="mx-10 my-10">
