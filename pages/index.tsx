@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { Inter } from "next/font/google";
 import useSWR from "swr";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -67,6 +67,17 @@ function kanaToHira(str: string) {
   });
 }
 
+function getBackgroundImage(srcSet = "") {
+  const imageSet = srcSet
+    .split(", ")
+    .map((str) => {
+      const [url, dpi] = str.split(" ");
+      return `url("${url}") ${dpi}`;
+    })
+    .join(", ");
+  return `image-set(${imageSet})`;
+}
+
 export default function Home() {
   // Tsv
   // playerId \t playerName \t aliases
@@ -127,6 +138,22 @@ export default function Home() {
     router.push(`/players/${matchedPlayers[0].playerId}`);
   };
 
+  // https://nextjs.org/docs/pages/api-reference/components/image#background-css
+  const {
+    props: { srcSet },
+  } = getImageProps({
+    alt: "",
+    width: 128,
+    height: 128,
+    src: "/background.png",
+  });
+  const backgroundImage = getBackgroundImage(srcSet);
+  const style = {
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundImage,
+  };
+
   if (!playerData || featuredPlayers.length === 0) {
     return;
   }
@@ -140,11 +167,7 @@ export default function Home() {
         <main className="mx-auto flex min-h-screen flex-col items-center">
           <div
             className="w-full pt-48 pb-24 bg-gray-100 flex justify-center"
-            style={{
-              backgroundImage: "url(/background.png)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
+            style={style}
           >
             <div>
               <div className="text-5xl mb-10 text-white text-center">
